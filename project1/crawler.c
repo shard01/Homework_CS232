@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #define MAX_ADDR_LENGTH 1000
 
@@ -9,10 +10,8 @@
  */
 struct listNode{
   char addr[MAX_ADDR_LENGTH];
-
   struct listNode *next;
 };
-
 /*
  * returns 1 if the list starting at pNode contains the address addr,
  *    and returns 0 otherwise
@@ -35,8 +34,7 @@ void printAddresses(const struct listNode *pNode);
  * frees the memory associated with this node and all subsequent nodes
  */
 void destroyList(struct listNode *pNode);
-
-
+  
 /*
  * srcAddr should be a web address (e.g., http://www.yahoo.com).
  * link should point to an array of maxLinkLength characters.
@@ -46,21 +44,21 @@ void destroyList(struct listNode *pNode);
 int getLink(const char* srcAddr, char* link, const int maxLinkLength);
 
 int main(int argc, char** argv){
-
+  
   long seed;
 
   char startAddr[MAX_ADDR_LENGTH];
   char destAddr[MAX_ADDR_LENGTH];
-
+  
   int hopNum, numHops;
-
+  
   struct listNode *pListStart;
 
   if(argc < 3 || argc > 4){
     fprintf(stderr, "USAGE: %s startAddr numHops [rand seed]", argv[0]);
     return -1;
   }
-
+  
   /* initialization */
   if(argc >= 4){
     seed = atol(argv[3]);
@@ -85,7 +83,6 @@ int main(int argc, char** argv){
   strncpy(pListStart->addr, startAddr, MAX_ADDR_LENGTH);
   pListStart->next = NULL;
 
-
   /* start the crawling */
   for(hopNum=1; hopNum <= numHops; hopNum++){
     int res = getLink(startAddr, destAddr, MAX_ADDR_LENGTH);
@@ -96,8 +93,7 @@ int main(int argc, char** argv){
     }
 
     if(contains(pListStart, destAddr)){
-      printf("Cycle detected on hop %d: address %s\n", hopNum,
-	     destAddr);
+      printf("Cycle detected on hop %d: address %s\n", hopNum, destAddr);
       hopNum--; // try again for this hop in the next iteration
     }
     else{
@@ -118,36 +114,39 @@ int main(int argc, char** argv){
  * returns 1 if the list starting at pNode contains the address addr,
  *    and returns 0 otherwise
  */
-int contains(const struct listNode *pNode, const char *addr)
-{
-  if (pNode == NULL)
+int contains(const struct listNode *pNode, const char *addr){
+  // TODO: complete this
+    if(pNode == NULL) {
       return 0;
-  else if (strcmp(pNode->addr, addr)==0)
+    }
+     if(strncmp(pNode->addr, addr, MAX_ADDR_LENGTH) == 0) {
       return 1;
-  else
-      return (contains(pNode->next, addr));
+     }
+    else {
+      return contains(pNode->next,addr);
+    }
+   
+  return 0;
 }
-
+    
 
 /*
  * inserts the address addr as a new listNode at the end of
  *    the list
  */
-void insertBack(struct listNode *pNode, const char *addr)
-{
-
-  if (pNode->next == NULL)
-  {
-    struct listNode* nodeToAdd;
-
-    nodeToAdd = (struct listNode*)malloc(sizeof(struct listNode));
-    strcpy(nodeToAdd->addr,addr);
-    nodeToAdd->next = NULL;
-
-    pNode->next = nodeToAdd;
+void insertBack(struct listNode *pNode, const char *addr){
+  // TODO: complete this
+  if(pNode->next==NULL)
+  {  
+    struct listNode *temp =  malloc(sizeof(struct listNode));
+    strncpy(temp->addr, addr, MAX_ADDR_LENGTH);
+    temp->next = NULL;
+    pNode->next = temp;
+    return;
   }
-  else
-      return (insertBack(pNode->next, addr));
+
+ insertBack(pNode->next,addr);
+
 }
 
 
@@ -155,33 +154,32 @@ void insertBack(struct listNode *pNode, const char *addr)
  * prints the addresses from pNode to the end of the list,
  *   one on each line
  */
-void printAddresses(const struct listNode *pNode)
-{
-  if(pNode == NULL)
+void printAddresses(const struct listNode *pNode){
+  // TODO: complete this
+  if(pNode == NULL) {
     return;
-  else
-  {
-    printf("%s\n",pNode->addr);
-    printAddresses(pNode->next);
-    return;
+  } 
+  else {
+  printf("%s\n", pNode->addr);
+  printAddresses(pNode->next);
   }
+
 }
 
 /*
  * frees the memory associated with this node and all subsequent nodes
  */
-void destroyList(struct listNode *pNode)
-{
-  if(pNode->next == NULL)
-  {
-    free(pNode);
-    return;
+void destroyList(struct listNode *pNode){
+  // TODO: complete this
+  if(pNode==NULL) {
+  return;
   }
   else
   {
-    free(pNode);
-    return;
+  destroyList(pNode->next);
+  free(pNode);
   }
+
 }
 
 int getLink(const char* srcAddr, char* link, const int maxLinkLength){
@@ -196,8 +194,7 @@ int getLink(const char* srcAddr, char* link, const int maxLinkLength){
 
   pipe = popen(buffer, "r");
   if(pipe == NULL){
-    fprintf(stderr, "ERROR: could not open the pipe for command %s\n",
-	    buffer);
+    fprintf(stderr, "ERROR: could not open the pipe for command %s\n", buffer);
     return 0;
   }
 
@@ -209,21 +206,21 @@ int getLink(const char* srcAddr, char* link, const int maxLinkLength){
 
     for(linkNum=0; linkNum<numLinks; linkNum++){
       fgets(buffer, bufSize, pipe);
-
+      
       if(r < (linkNum + 1.0) / numLinks){
-		break;
+		    break;
       }
     }
 
     /* copy the address from buffer to link */
     strncpy(link, buffer, maxLinkLength);
     link[maxLinkLength-1] = '\0';
-
+    
     /* get rid of the newline */
     {
       char* pNewline = strchr(link, '\n');
       if(pNewline != NULL){
-		*pNewline = '\0';
+		    *pNewline = '\0';
       }
     }
   }
