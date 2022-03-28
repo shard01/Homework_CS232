@@ -190,7 +190,7 @@ int getLink(const char* srcAddr, char* link, const int maxLinkLength){
 
   FILE *pipe;
 
-  snprintf(buffer, bufSize, "curl -s \"%s\" | python getLinks.py", srcAddr);
+  snprintf(buffer, bufSize, "curl -s \"%s\" | python3 getLinks.py", srcAddr);
 
   pipe = popen(buffer, "r");
   if(pipe == NULL){
