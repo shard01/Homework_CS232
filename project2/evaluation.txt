@@ -1,0 +1,4 @@
+Me and Hudson divied the code into two halfs. 
+I worked on the 1st part and Hudson did the 2nd part.
+I worked on on the trie struct, indexPage and addWordOccurrence and the main.
+It took me about 6 to 7  hours in total to finish off my part.
